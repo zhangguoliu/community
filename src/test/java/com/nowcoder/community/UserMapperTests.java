@@ -2,9 +2,7 @@ package com.nowcoder.community;
 
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.User;
-import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,7 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 @SpringBootTest
 // 使用和 CommunityApplication 一样的配置类
 @ContextConfiguration(classes = CommunityApplication.class)
-public class UserMapperTest {
+public class UserMapperTests {
     /* Bug 解决记录：
     org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name
     解决方法，将 mybatis 依赖版本更换为 3.0.1

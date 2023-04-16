@@ -20,7 +20,7 @@ import java.util.List;
 @SpringBootTest
 // 使用和 CommunityApplication 一样的配置类
 @ContextConfiguration(classes = CommunityApplication.class)
-public class DiscussPostMapperTest {
+public class DiscussPostMapperTests {
 
     @Autowired
     private DiscussPostMapper discussPostMapper;

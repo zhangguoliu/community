@@ -17,9 +17,9 @@ import org.springframework.test.context.ContextConfiguration;
 @SpringBootTest
 // 使用和 CommunityApplication 一样的配置类
 @ContextConfiguration(classes = CommunityApplication.class)
-public class LoggerTest {
+public class LoggerTests {
     // 类名即 Logger 的名字，此处名为 LoggerTest
-    private static final Logger logger = LoggerFactory.getLogger(LoggerTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoggerTests.class);
 
     @Test
     public void testLogger() {
