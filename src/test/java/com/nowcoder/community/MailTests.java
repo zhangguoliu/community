@@ -31,6 +31,7 @@ public class MailTests {
     }
 
     // 在测试类中，没有 @Controller，需要注入 TemplateEngine
+    // 也常在业务逻辑层使用这种做法
     @Autowired
     private TemplateEngine templateEngine;
 

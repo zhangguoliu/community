@@ -66,6 +66,14 @@
             <artifactId>jakarta.mail-api</artifactId>
             <version>2.1.0</version>
         </dependency>
+
+        <!-- 开发注册功能 -->
+        <!-- 如使用包中的 StringUtils.isBlank() 方法判断是否为 null、空串、空字符等 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+        </dependency>
     </dependencies>
 
     <build>
