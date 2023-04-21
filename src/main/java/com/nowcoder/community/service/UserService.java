@@ -2,6 +2,7 @@ package com.nowcoder.community.service;
 
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
@@ -24,8 +25,10 @@ import java.util.Random;
  * @Description: TODO   注册逻辑，发送激活邮件
  * @Version: 1.0
  */
+
+// 需要激活邮件的业务，所以实现 CommunityConstant
 @Service
-public class UserService {
+public class UserService implements CommunityConstant {
     @Autowired
     private UserMapper userMapper;
 
@@ -107,5 +110,18 @@ public class UserService {
             mailClient.sendMail(user.getEmail(), "激活账户", content);
         }
         return map; // map 为空（null）表示没有问题
+    }
+
+    // 激活邮件的业务，需要实现 CommunityConstant
+    public int activation(int userId, String code) {
+        User user = userMapper.selectById(userId);
+        if (user.getStatus() == 1) {
+            return ACTIVATION_REPEAT;
+        } else if (user.getActivationCode().equals(code)) {
+            userMapper.updateStatus(userId, 1);
+            return ACTIVATION_SUCCESS;
+        } else {
+            return ACTIVATION_FAILURE;
+        }
     }
 }
