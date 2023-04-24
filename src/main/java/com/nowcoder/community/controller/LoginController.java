@@ -5,13 +5,17 @@ import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityConstant;
 import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +46,9 @@ public class LoginController implements CommunityConstant {
     // 生成验证码需要通过配置类注入第三方的 Bean
     @Autowired
     private Producer kaptchaProducer;
+
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
 
     // 访问注册页面倒是无须 Model
     @GetMapping("/register")
@@ -119,5 +126,55 @@ public class LoginController implements CommunityConstant {
         } catch (IOException e) {
             logger.error("响应验证码失败：" + e.getMessage());
         }
+    }
+
+    /*
+     * @description: 处理登录请求（POST）
+     * @author: zhangguoliu
+     * @date: 2023/4/24 14:12
+     * @param: username
+     * @param: password
+     * @param: code 用户提交验证码
+     * @param: rememberMe   是否记住我
+     * @param: session 获取正确的验证码
+     * @param: response 返回 Cookie 记住 ticket
+     * @return: java.lang.String
+     **/
+    @PostMapping("/login")
+    public String login(
+            String username, String password,
+            String code, boolean rememberMe,
+            HttpSession session, HttpServletResponse response,
+            Model model) {
+
+        // 判断验证码（equalsIgnoreCase：不区分大小写）
+        String kaptcha = (String) session.getAttribute("kaptcha");
+        if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code)
+                || !kaptcha.equalsIgnoreCase(code)) {
+            model.addAttribute("codeMsg", "验证码不正确！");
+            return "/site/login";
+        }
+
+        // 检查账号、密码
+        int expiredSeconds = rememberMe ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
+        Map<String, Object> map = userService.login(username, password, expiredSeconds);
+        if (map.containsKey("ticket")) {
+            Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
+            cookie.setPath(contextPath);
+            cookie.setMaxAge(expiredSeconds);
+            response.addCookie(cookie);
+            return "redirect:/index";
+        } else {
+            // 若 map 中没有则为 null，此时 model 得到后不会显示到页面
+            model.addAttribute("usernameMsg", map.get("usernameMsg"));
+            model.addAttribute("passwordMsg", map.get("passwordMsg"));
+            return "/site/login";
+        }
+    }
+
+    @GetMapping("/logout")
+    public String logout(@CookieValue("ticket") String ticket) {
+        userService.logout(ticket);
+        return "redirect:/login";
     }
 }
