@@ -1,5 +1,6 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityUtil;
@@ -53,12 +54,14 @@ public class UserController {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
+    @LoginRequired
     @GetMapping("/setting")
     public String getUserSettingPage() {
         return "/site/setting";
     }
 
     // 上传的文件通过 MultipartFile 管理
+    @LoginRequired
     @PostMapping("/upload")
     public String uploadHeader(MultipartFile headerImage, Model model) {
         if (headerImage == null) {
@@ -109,6 +112,7 @@ public class UserController {
         return "redirect:/index";
     }
 
+    // 获取头像
     @GetMapping("/header/{fileName}")
     public void getHeader(@PathVariable("fileName") String fileName,
                           HttpServletResponse response) {
@@ -135,6 +139,7 @@ public class UserController {
     }
 
     // 修改密码
+    @LoginRequired
     @PostMapping("/updatePassword")
     public String updatePassword(String oldPassword, String newPassword, Model model) {
         User user = hostHolder.getUser();
