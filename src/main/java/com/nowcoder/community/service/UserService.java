@@ -6,7 +6,6 @@ import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
-import com.nowcoder.community.util.CookieUtil;
 import com.nowcoder.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,6 +198,39 @@ public class UserService implements CommunityConstant {
         userMapper.updateHeader(userId, headerUrl);
     }
 
+    public User findUserByEmail(String email) {
+        return userMapper.selectByEmail(email);
+    }
+
+    // 重置密码
+    public Map<String, Object> resetPassword(String email, String password) {
+        Map<String, Object> map = new HashMap<>();
+
+        // 空值处理
+        if (StringUtils.isBlank(email)) {
+            map.put("emailMsg", "邮箱不能为空！");
+            return map;
+        }
+        if (StringUtils.isBlank(password)) {
+            map.put("passwordMsg", "密码不能为空！");
+            return map;
+        }
+
+        // 验证邮箱
+        User user = userMapper.selectByEmail(email);
+        if (user == null) {
+            map.put("emailMsg", "此邮箱尚未注册！");
+            return map;
+        }
+
+        // 重置密码
+        password = CommunityUtil.md5(password + user.getSalt());
+        userMapper.updatePassword(user.getId(), password);
+        map.put("user", user);
+        return map;
+    }
+
+    // 修改密码
     public Map<String, Object> updatePassword(int userId, String oldPassword, String newPassword) {
         Map<String, Object> map = new HashMap<>();
 

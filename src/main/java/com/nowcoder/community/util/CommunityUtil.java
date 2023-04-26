@@ -1,18 +1,13 @@
 package com.nowcoder.community.util;
 
-import io.micrometer.common.util.StringUtils;
+import com.alibaba.fastjson2.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.DigestUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
-/**
- * @BelongsProject: community
- * @BelongsPackage: com.nowcoder.community.util
- * @Author: zhangguoliu
- * @CreateTime: 2023-04-18  15:08
- * @Description: TODO 加密工具
- * @Version: 1.0
- */
 public class CommunityUtil {
 
     // 生成随机字符串
@@ -20,15 +15,41 @@ public class CommunityUtil {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    // MD5 加密。key 是加盐（salt）后的
+    // MD5加密
+    // hello -> abc123def456
+    // hello + 3e4a8 -> abc123def456abc
     public static String md5(String key) {
-
-        // 不处理 null、空串、空字符等
         if (StringUtils.isBlank(key)) {
             return null;
         }
-
-        // 使用 Spring 自带的加密工具 DigestUtils
         return DigestUtils.md5DigestAsHex(key.getBytes());
     }
+
+    public static String getJSONString(int code, String msg, Map<String, Object> map) {
+        JSONObject json = new JSONObject();
+        json.put("code", code);
+        json.put("msg", msg);
+        if (map != null) {
+            for (String key : map.keySet()) {
+                json.put(key, map.get(key));
+            }
+        }
+        return json.toJSONString();
+    }
+
+    public static String getJSONString(int code, String msg) {
+        return getJSONString(code, msg, null);
+    }
+
+    public static String getJSONString(int code) {
+        return getJSONString(code, null, null);
+    }
+
+    public static void main(String[] args) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", "zhangsan");
+        map.put("age", 25);
+        System.out.println(getJSONString(0, "ok", map));
+    }
+
 }
