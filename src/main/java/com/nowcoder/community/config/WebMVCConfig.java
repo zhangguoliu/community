@@ -27,6 +27,7 @@ public class WebMVCConfig implements WebMvcConfigurer {
     @Autowired
     private LoginRequiredInterceptor loginRequiredInterceptor;
 
+    // 按注册顺序决定拦截顺序
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
