@@ -46,6 +46,9 @@ public class CommunityUtil {
     }
 
     public static void main(String[] args) {
+        System.out.println(getJSONString(0));
+        System.out.println(getJSONString(0, "ok"));
+
         Map<String, Object> map = new HashMap<>();
         map.put("name", "zhangsan");
         map.put("age", 25);

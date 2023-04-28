@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +34,17 @@ public class DiscussPostMapperTests {
         }
 
         int i = discussPostMapper.selectDiscussPostRows(149);
+        System.out.println(i);
+    }
+
+    @Test
+    public void testInsert() {
+        DiscussPost discussPost = new DiscussPost();
+        discussPost.setUserId(1);
+        discussPost.setTitle("Test");
+        discussPost.setContent("Test");
+        discussPost.setCreateTime(new Date());
+        int i = discussPostMapper.insertDiscussPost(discussPost);
         System.out.println(i);
     }
 }

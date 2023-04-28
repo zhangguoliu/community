@@ -1,7 +1,6 @@
 package com.nowcoder.community;
 
 import com.nowcoder.community.dao.AlphaDao;
-import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.service.AlphaService;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;

@@ -204,4 +204,13 @@ public class AlphaController {
         System.out.println(name);
         return "get session";
     }
+
+    // ajax 使用示例（ajax-demo.html）
+    @PostMapping("/ajax")
+    @ResponseBody
+    public String testAjax(String name, int age) {
+        System.out.println(name);
+        System.out.println(age);
+        return CommunityUtil.getJSONString(0, "ok!");
+    }
 }

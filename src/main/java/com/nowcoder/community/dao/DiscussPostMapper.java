@@ -38,4 +38,6 @@ public interface DiscussPostMapper {
      * @return: int
      **/
     int selectDiscussPostRows(int userId);
+
+    int insertDiscussPost(DiscussPost discussPost);
 }
