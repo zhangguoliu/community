@@ -17,7 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 @SpringBootTest
 // 使用和 CommunityApplication 一样的配置类
 @ContextConfiguration(classes = CommunityApplication.class)
-public class SensitiveTest {
+public class SensitiveTests {
     @Autowired
     private SensitiveFilter sensitiveFilter;
 
