@@ -10,10 +10,7 @@ import com.nowcoder.community.util.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.xml.crypto.Data;
 import java.util.*;
@@ -167,4 +164,12 @@ public class MessageController {
         return CommunityUtil.getJSONString(0);
     }
 
+    @PostMapping("/letter/delete")
+    @ResponseBody
+    public String deleteLetter(int id) {
+        List<Integer> ids = new ArrayList<>();
+        ids.add(id);
+        messageService.deleteMessage(ids);
+        return CommunityUtil.getJSONString(0);
+    }
 }

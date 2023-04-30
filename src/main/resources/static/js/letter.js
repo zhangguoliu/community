@@ -1,6 +1,6 @@
 $(function(){
 	$("#sendBtn").click(send_letter);
-	$(".close").click(delete_msg);
+	$(".close-msg").click(delete_msg);
 });
 
 function send_letter() {
@@ -21,7 +21,7 @@ function send_letter() {
 			if (data.code == 0) {
 				$("#hintBody").text("发送成功！");
 			} else {
-				$("#hintBody").text("发送失败！");
+				$("#hintBody").text(data.msg);
 			}
 
 			$("#hintModal").modal("show");
@@ -35,5 +35,24 @@ function send_letter() {
 
 function delete_msg() {
 	// TODO 删除数据
+	var btn = this;
+	var id = $(btn).prev().val();
+	// var id = $("#letter-del-id").val(); 是错误的
+
+	// $(btn).parents(".media").remove();
 	$(this).parents(".media").remove();
+
+	$.post(
+		CONTEXT_PATH + "/letter/delete",
+		{
+			"id": id
+		},
+		function (data) {
+			data = $.parseJSON(data);
+
+			if (data.code != 0) {
+				alert("删除失败！");
+			}
+		}
+	);
 }
