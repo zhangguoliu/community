@@ -8,6 +8,23 @@
         id, from_id, to_id, conversation_id, content, status, create_time
     </sql>
 
+    <sql id="insertFields">
+        from_id, to_id, conversation_id, content, status, create_time
+    </sql>
+
+    <insert id="insertMessage" useGeneratedKeys="true" keyProperty="id">
+        insert into message (<include refid="insertFields"/>)
+        value (#{fromId}, #{toId}, #{conversationId}, #{content}, #{status}, #{createTime})
+    </insert>
+
+    <update id="updateStatus">
+        update message set status = #{status}
+        where id in
+        <foreach collection="ids" item="id" open="(" separator=", " close=")">
+            #{id}
+        </foreach>
+    </update>
+
     <!-- 注意：同一个会话的 所有消息中的 最新的消息的 id 一定是最大的
          from_id != 1 表示不是系统消息-->
     <select id="selectConversations" resultType="Message">
