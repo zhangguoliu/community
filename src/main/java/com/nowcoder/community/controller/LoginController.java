@@ -195,6 +195,12 @@ public class LoginController implements CommunityConstant {
     @GetMapping("/forget/code")
     @ResponseBody
     public String getForgetCode(String email, HttpSession session) {
+
+        // 报错的情况，将来统一处理（3.31 统一处理异常）
+
+        // 手动制造错误来测试
+        // Integer.parseInt("abc");
+
         if (StringUtils.isBlank(email)) {
             return CommunityUtil.getJSONString(1, "邮箱不能为空！");
         }

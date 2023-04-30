@@ -39,6 +39,11 @@ public class MessageController {
     @GetMapping("/letter/list")
     public String getLetterList(Model model, Page page) {
 
+        // 报错的情况，将来统一处理（3.31 统一处理异常）
+
+        // 手动制造错误来测试
+        // Integer.parseInt("abc");
+
         User user = hostHolder.getUser();
 
         // 分页信息
@@ -144,6 +149,12 @@ public class MessageController {
     @PostMapping("/letter/send")
     @ResponseBody
     public String sendLetter(String toName, String content) {
+
+        // 报错的情况，将来统一处理（3.31 统一处理异常）
+
+        // 手动制造错误来测试
+        // Integer.parseInt("abc");
+
         User target = userService.findUserByName(toName);
         if (target == null) {
             return CommunityUtil.getJSONString(1, "目标用户不存在");

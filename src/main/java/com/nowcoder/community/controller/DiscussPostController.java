@@ -45,6 +45,12 @@ public class DiscussPostController implements CommunityConstant {
     @PostMapping("/add")
     @ResponseBody
     public String addDiscussPost(String title, String content) {
+
+        // 报错的情况，将来统一处理（3.31 统一处理异常）
+
+        // 手动制造错误来测试
+        // Integer.parseInt("abc");
+
         User user = hostHolder.getUser();
         if (user == null) {
             // 403：没有权限
@@ -63,7 +69,6 @@ public class DiscussPostController implements CommunityConstant {
         discussPost.setCreateTime(new Date());
         discussPostService.addDiscussPost(discussPost);
 
-        // 报错的情况，将来统一处理
         return CommunityUtil.getJSONString(0, "发布成功！");
     }
 

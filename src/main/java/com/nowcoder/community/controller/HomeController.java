@@ -68,4 +68,15 @@ public class HomeController {
         model.addAttribute("discussposts", discussPosts);
         return "/index";
     }
+
+    /**
+     * @description: 3.31 统一处理异常
+     * @author: zhangguoliu
+     * @date: 2023/4/30 17:21
+     * @return: java.lang.String
+     **/
+    @GetMapping("/error")
+    public String getErrorPage() {
+        return "/error/500";
+    }
 }
