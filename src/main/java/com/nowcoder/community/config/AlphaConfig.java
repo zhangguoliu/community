@@ -17,7 +17,9 @@ import java.text.SimpleDateFormat;
 // @Configuration 底层是基于 @Component 的
 // @SpringBootApplication 也可以表示一个配置类，但主要用于注解应用程序入口类
 public class AlphaConfig {
-    @Bean   // @Bean 可以装配任何 Bean，除了装配第三方 Bean，也可以装配自定义的 Bean
+    // @Bean 可以装配任何 Bean，除了装配第三方 Bean，也可以装配自定义的 Bean
+    // 方法名 simpleDateFormat 即 Bean 的名字
+    @Bean
     public SimpleDateFormat simpleDateFormat() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
