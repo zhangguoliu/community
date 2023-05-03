@@ -13,9 +13,16 @@ public class RedisKeyUtil {
 
     private static final String PREFIX_ENTITY_LIKE = "like:entity";
 
+    private static final String PREFIX_USER_LIKE = "like:user";
+
     // 某个实体的赞。like:entity:entityType:entityId → set(userId)
     // 使用 set 而不是用整数的意义是便于功能的扩展，如加入知道是谁点赞的功能
     public static String getEntityLikeKey(int entityType, int entityId) {
         return PREFIX_ENTITY_LIKE + SPLIT + entityType + SPLIT + entityId;
+    }
+
+    // 某个用户获得的赞
+    public static String getUserLikeKey(int userId) {
+        return PREFIX_USER_LIKE + SPLIT + userId;
     }
 }

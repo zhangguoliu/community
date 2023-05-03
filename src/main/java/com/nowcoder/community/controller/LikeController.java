@@ -32,13 +32,13 @@ public class LikeController {
 
     @PostMapping("/like")
     @ResponseBody
-    public String like(int entityType, int entityId) {
+    public String like(int entityUserId, int entityType, int entityId) {
         User user = hostHolder.getUser();
 
         // 判断用户是否登录：可以通过注解 @LoginRequired 或者 将来用 Spring Security 进行重构
 
         // 点赞
-        likeService.like(user.getId(), entityType, entityId);
+        likeService.like(user.getId(), entityUserId, entityType, entityId);
 
         // 点赞的数量
         long likeCount = likeService.findEntityLikeCount(entityType, entityId);
