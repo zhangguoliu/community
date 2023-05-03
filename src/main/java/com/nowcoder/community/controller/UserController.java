@@ -2,8 +2,10 @@ package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.service.FollowService;
 import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
 import jakarta.servlet.ServletOutputStream;
@@ -36,7 +38,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController implements CommunityConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -48,6 +50,9 @@ public class UserController {
 
     @Autowired
     private LikeService likeService;
+
+    @Autowired
+    private FollowService followService;
 
     @Value("${community.path.upload}")
     private String uploadPath;
@@ -170,6 +175,21 @@ public class UserController {
 
         int likeCount = likeService.findUserLikeCount(userId);
         model.addAttribute("likeCount", likeCount);
+
+        // 如果是当前用户自己的个人主页，则没必要获取对自己的关注状态
+        boolean followStatus = false;
+        if (hostHolder.getUser() != null && hostHolder.getUser().getId() != userId){
+            followStatus = followService.getFollowStatus(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
+        }
+        model.addAttribute("followStatus", followStatus);
+
+        // 获取当前主页用户的关注的用户的数量
+        long followeeCount = followService.getFolloweeEntityCount(userId, ENTITY_TYPE_USER);
+        model.addAttribute("followeeCount", followeeCount);
+
+        // 获取当前主页用户的粉丝的数量
+        long followerCount = followService.getFollowerEntityCount(ENTITY_TYPE_USER, userId);
+        model.addAttribute("followerCount", followerCount);
 
         return "site/profile";
     }
