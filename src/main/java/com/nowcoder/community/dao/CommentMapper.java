@@ -22,4 +22,10 @@ public interface CommentMapper {
 
     int insertComment(Comment comment);
 
+    List<Comment> selectCommentsByUserId(int userId, int offset, int limit);
+
+    int selectCountByUserId(int userId);
+
+    int selectPostIdByCommentId(int commentForPostId);
+
 }

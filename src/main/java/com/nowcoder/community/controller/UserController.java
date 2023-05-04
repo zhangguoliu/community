@@ -1,13 +1,11 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
-import com.nowcoder.community.service.DiscussPostService;
-import com.nowcoder.community.service.FollowService;
-import com.nowcoder.community.service.LikeService;
-import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.service.*;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
@@ -62,6 +60,9 @@ public class UserController implements CommunityConstant {
 
     @Autowired
     private DiscussPostService discussPostService;
+
+    @Autowired
+    private CommentService commentService;
 
     @Value("${community.path.upload}")
     private String uploadPath;
@@ -229,5 +230,42 @@ public class UserController implements CommunityConstant {
         }
         model.addAttribute("posts", posts);
         return "/site/my-post";
+    }
+
+    @GetMapping("/comment/{userId}")
+    public String getUserCommentsPage(@PathVariable("userId") int userId, Page page, Model model) {
+        User user = userService.findUserById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("参数不正确！");
+        }
+        model.addAttribute("user", user);
+
+        int commentCount = commentService.findCommentCountByUserId(userId);
+        model.addAttribute("commentCount", commentCount);
+
+        page.setLimit(5);
+        page.setPath("/user/comment/" + userId);
+        page.setRows(commentCount);
+
+        List<Comment> list = commentService.findCommentsByUserId(userId, page.getOffset(), page.getLimit());
+        List<Map<String, Object>> comments = new ArrayList<>();
+        for (Comment comment : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("comment", comment);
+
+            // 此回复对应的帖子
+            DiscussPost post = null;
+            if (comment.getEntityType() == ENTITY_TYPE_POST) {
+                post = discussPostService.findDiscussPostById(comment.getEntityId());
+            } else if (comment.getEntityType() == ENTITY_TYPE_COMMENT) {
+                int commentForPostId = comment.getEntityId();
+                int postId = commentService.getPostByCommentId(commentForPostId);
+                post = discussPostService.findDiscussPostById(postId);
+            }
+            map.put("post", post);
+            comments.add(map);
+        }
+        model.addAttribute("comments", comments);
+        return "/site/my-reply";
     }
 }
