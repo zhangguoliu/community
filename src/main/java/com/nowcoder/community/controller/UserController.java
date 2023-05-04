@@ -1,7 +1,10 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
+import com.nowcoder.community.entity.DiscussPost;
+import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.service.FollowService;
 import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
@@ -26,6 +29,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,6 +59,9 @@ public class UserController implements CommunityConstant {
 
     @Autowired
     private FollowService followService;
+
+    @Autowired
+    private DiscussPostService discussPostService;
 
     @Value("${community.path.upload}")
     private String uploadPath;
@@ -178,7 +187,7 @@ public class UserController implements CommunityConstant {
 
         // 如果是当前用户自己的个人主页，则没必要获取对自己的关注状态
         boolean followStatus = false;
-        if (hostHolder.getUser() != null && hostHolder.getUser().getId() != userId){
+        if (hostHolder.getUser() != null && hostHolder.getUser().getId() != userId) {
             followStatus = followService.getFollowStatus(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
         }
         model.addAttribute("followStatus", followStatus);
@@ -192,5 +201,33 @@ public class UserController implements CommunityConstant {
         model.addAttribute("followerCount", followerCount);
 
         return "site/profile";
+    }
+
+    @GetMapping("/post/my/{userId}")
+    public String getUserPostsPage(@PathVariable("userId") int userId, Page page, Model model) {
+        User user = userService.findUserById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("参数不正确！");
+        }
+        model.addAttribute("user", user);
+
+        int rows = discussPostService.findDiscussPostRows(userId);
+        model.addAttribute("rows", rows);
+
+        page.setLimit(5);
+        page.setPath("/user/post/my/" + userId);
+        page.setRows(rows);
+
+        List<DiscussPost> discussPosts = discussPostService.findDiscussPosts(userId, page.getOffset(), page.getLimit());
+        List<Map<String, Object>> posts = new ArrayList<>();
+        for (DiscussPost post : discussPosts) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("post", post);
+            long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
+            map.put("likeCount", likeCount);
+            posts.add(map);
+        }
+        model.addAttribute("posts", posts);
+        return "/site/my-post";
     }
 }
