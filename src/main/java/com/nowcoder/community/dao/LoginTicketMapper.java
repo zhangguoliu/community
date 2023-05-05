@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.*;
  * @Version: 1.0
  */
 @Mapper
+@Deprecated
 public interface LoginTicketMapper {
     // 也可以 @Insert({"", "", ""}) 因为底层的 value 是一个 String[] 数组
     // @Options(useGeneratedKeys = true, keyProperty = "id") 自动生成主键并注入给 id

@@ -1,15 +1,16 @@
 package com.nowcoder.community.service;
 
-import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.MailClient;
+import com.nowcoder.community.util.RedisKeyUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @BelongsProject: community
@@ -40,8 +42,11 @@ public class UserService implements CommunityConstant {
     @Autowired
     private TemplateEngine templateEngine;
 
+    /*@Autowired
+    private LoginTicketMapper loginTicketMapper;*/
+
     @Autowired
-    private LoginTicketMapper loginTicketMapper;
+    private RedisTemplate<String, Object> redisTemplate;
 
     // ${} 指用表达式的方式取 key
     @Value("${community.path.domain}")
@@ -178,7 +183,9 @@ public class UserService implements CommunityConstant {
         loginTicket.setTicket(CommunityUtil.generateUUID());
         loginTicket.setStatus(0);
         loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000L));
-        loginTicketMapper.insertLoginTicket(loginTicket);
+        /*loginTicketMapper.insertLoginTicket(loginTicket);*/
+        String ticketKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
+        redisTemplate.opsForValue().set(ticketKey, loginTicket, expiredSeconds, TimeUnit.SECONDS);
 
         map.put("ticket", loginTicket.getTicket());
 
@@ -187,11 +194,17 @@ public class UserService implements CommunityConstant {
 
     // 登出
     public void logout(String ticket) {
-        loginTicketMapper.updateStatus(ticket, 1);
+        /*loginTicketMapper.updateStatus(ticket, 1);*/
+
+        // 暂且先删除。如果后面需要统计登录历史信息，则取消删除，替换为修改状态
+        String ticketKey = RedisKeyUtil.getTicketKey(ticket);
+        redisTemplate.delete(ticketKey);
     }
 
     public LoginTicket findLoginTicket(String ticket) {
-        return loginTicketMapper.selectByTicket(ticket);
+        /*return loginTicketMapper.selectByTicket(ticket);*/
+        String ticketKey = RedisKeyUtil.getTicketKey(ticket);
+        return (LoginTicket) redisTemplate.opsForValue().get(ticketKey);
     }
 
     public void updateHeader(int userId, String headerUrl) {
