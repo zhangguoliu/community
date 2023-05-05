@@ -14,6 +14,7 @@ public class RedisKeyUtil {
     private static final String PREFIX_USER_LIKE = "like:user";
     private static final String PREFIX_ENTITY_FOLLOWEE = "followee";
     private static final String PREFIX_ENTITY_FOLLOWER = "follower";
+    private static final String PREFIX_KAPTCHA = "kaptcha";
 
     // 某个实体的赞。like:entity:entityType:entityId → set(userId)
     // 使用 set 而不是用整数的意义是便于功能的扩展，如加入知道是谁点赞的功能
@@ -34,5 +35,9 @@ public class RedisKeyUtil {
     // 某个实体被某个用户关注。follower:entityType:entityId -> zset(userId, nowTime)
     public static String getFollowerEntityKey(int entityType, int entityId) {
         return PREFIX_ENTITY_FOLLOWER + SPLIT + entityType + SPLIT + entityId;
+    }
+
+    public static String getKaptchaKey(String uuid) {
+        return PREFIX_KAPTCHA + SPLIT + uuid;
     }
 }
