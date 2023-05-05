@@ -56,7 +56,31 @@ public class UserService implements CommunityConstant {
     private String contextPath;
 
     public User findUserById(int id) {
-        return userMapper.selectById(id);
+        /*return userMapper.selectById(id);*/
+        User user = findUserByRedis(id);
+        if (user == null) {
+            initUserInRedis(id);
+            user = findUserByRedis(id);
+        }
+        return user;
+    }
+
+    // 通过 Redis 查找用户
+    private User findUserByRedis(int userId) {
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        return (User) redisTemplate.opsForValue().get(redisKey);
+    }
+
+    // 通过 Redis 找不到用户则通过 MySQL 找到用户，然后存入 Redis 中
+    private void initUserInRedis(int userId) {
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.opsForValue().set(redisKey, userMapper.selectById(userId));
+    }
+
+    // 更新用户信息的时候，删除 Redis 中相应用户的信息
+    private void deleteUserInRedis(int userId) {
+        String redisKey = RedisKeyUtil.getUserKey(userId);
+        redisTemplate.delete(redisKey);
     }
 
     public Map<String, Object> register(User user) {
@@ -123,12 +147,16 @@ public class UserService implements CommunityConstant {
     }
 
     // 激活邮件的业务，需要实现 CommunityConstant
+    // 可能会缓存穿透？
     public int activation(int userId, String code) {
         User user = userMapper.selectById(userId);
         if (user.getStatus() == 1) {
             return ACTIVATION_REPEAT;
         } else if (user.getActivationCode().equals(code)) {
+
             userMapper.updateStatus(userId, 1);
+            deleteUserInRedis(userId);
+
             return ACTIVATION_SUCCESS;
         } else {
             return ACTIVATION_FAILURE;
@@ -207,8 +235,10 @@ public class UserService implements CommunityConstant {
         return (LoginTicket) redisTemplate.opsForValue().get(ticketKey);
     }
 
+    // 可能会缓存穿透？
     public void updateHeader(int userId, String headerUrl) {
         userMapper.updateHeader(userId, headerUrl);
+        deleteUserInRedis(userId);
     }
 
     public User findUserByEmail(String email) {
@@ -244,6 +274,7 @@ public class UserService implements CommunityConstant {
     }
 
     // 修改密码
+    // 可能会缓存穿透？
     public Map<String, Object> updatePassword(int userId, String oldPassword, String newPassword) {
         Map<String, Object> map = new HashMap<>();
 
@@ -268,6 +299,7 @@ public class UserService implements CommunityConstant {
         // 更新密码
         newPassword = newPassword + user.getSalt();
         userMapper.updatePassword(userId, CommunityUtil.md5(newPassword));
+        deleteUserInRedis(userId);
 
         return map;
     }

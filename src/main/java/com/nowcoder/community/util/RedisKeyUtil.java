@@ -16,6 +16,7 @@ public class RedisKeyUtil {
     private static final String PREFIX_ENTITY_FOLLOWER = "follower";
     private static final String PREFIX_KAPTCHA = "kaptcha";
     private static final String PREFIX_TICKET = "ticket";
+    private static final String PREFIX_USER = "user";
 
     // 某个实体的赞。like:entity:entityType:entityId → set(userId)
     // 使用 set 而不是用整数的意义是便于功能的扩展，如加入知道是谁点赞的功能
@@ -44,5 +45,9 @@ public class RedisKeyUtil {
 
     public static String getTicketKey(String ticket) {
         return PREFIX_TICKET + SPLIT + ticket;
+    }
+
+    public static String getUserKey(int userId) {
+        return PREFIX_USER + SPLIT + userId;
     }
 }
