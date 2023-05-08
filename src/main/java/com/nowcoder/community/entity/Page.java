@@ -26,8 +26,10 @@ public class Page {
     }
 
     public void setCurrent(int current) {
-        if (current >= 1) {
+        if (current >= 1 && current <= getTotal()) {
             this.current = current;
+        } else {
+            this.current = 1;
         }
     }
 

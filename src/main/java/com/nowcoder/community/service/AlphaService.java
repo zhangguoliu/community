@@ -6,8 +6,6 @@ import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityUtil;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -49,15 +47,15 @@ public class AlphaService {
     }
 
     public AlphaService() {
-        System.out.println("构造Bean...");
+        // System.out.println("构造Bean...");
     }
 
-    @PostConstruct  // Spring 管理 Bean 的初始化方法
+    // @PostConstruct  // Spring 管理 Bean 的初始化方法
     public void init() {
         System.out.println("初始化Bean...");
     }
 
-    @PreDestroy // Spring 管理 Bean 的销毁方法
+    // @PreDestroy // Spring 管理 Bean 的销毁方法
     public void destroy() {
         System.out.println("销毁Bean...");
     }
