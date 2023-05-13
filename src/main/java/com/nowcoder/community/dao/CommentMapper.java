@@ -28,4 +28,5 @@ public interface CommentMapper {
 
     int selectPostIdByCommentId(int commentForPostId);
 
+    Comment selectCommentById(int id);
 }

@@ -26,10 +26,8 @@ public class Page {
     }
 
     public void setCurrent(int current) {
-        if (current >= 1 && current <= getTotal()) {
+        if (current >= 1) {
             this.current = current;
-        } else {
-            this.current = 1;
         }
     }
 
@@ -39,7 +37,7 @@ public class Page {
 
     public void setLimit(int limit) {
         // limit 过大会增加服务器和浏览器的压力
-        if (limit >= 1 && limit <= 100) {
+        if (limit >= 1) {
             this.limit = limit;
         }
     }

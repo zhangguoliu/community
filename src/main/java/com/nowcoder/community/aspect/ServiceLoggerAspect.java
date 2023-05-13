@@ -40,6 +40,12 @@ public class ServiceLoggerAspect {
         // 获取 IP 地址
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+        // 如果是 kafka 的 EventProducer 调用了业务层，先不处理
+        if (attributes == null) {
+            return;
+        }
+
         HttpServletRequest request = attributes.getRequest();
         String ip = request.getRemoteHost();
 
