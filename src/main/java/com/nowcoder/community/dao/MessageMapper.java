@@ -2,6 +2,7 @@ package com.nowcoder.community.dao;
 
 import com.nowcoder.community.entity.Message;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -35,11 +36,13 @@ public interface MessageMapper {
     int insertMessage(Message message);
 
     // 修改消息的状态
-    int updateStatus(List<Integer> ids, int status);
+    int updateStatus(@Param("ids")List<Integer> ids, int status);
 
     Message selectLatestNotice(int userId, String topic);
 
     int selectNoticeCount(int userId, String topic);
 
     int selectNoticeUnreadCount(int userId, String topic);
+
+    List<Message> selectNotices(int userId, String topic, int offset, int limit);
 }

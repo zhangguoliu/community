@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.nowcoder.community.entity.Message;
 import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.MessageService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityConstant;
@@ -267,5 +268,54 @@ public class MessageController implements CommunityConstant {
         model.addAttribute("noticeUnreadCount", noticeUnreadCount);
 
         return "/site/notice";
+    }
+
+    @GetMapping("/notice/detail/{topic}")
+    public String getNoticeDetail(@PathVariable("topic") String topic, Page page, Model model) {
+        if (!("comment".equals(topic) || "like".equals(topic) || "follow".equals(topic))) {
+            throw new IllegalArgumentException("参数不正确！");
+        }
+
+        page.setLimit(5);
+        page.setRows(messageService.findNoticeCount(hostHolder.getUser().getId(), topic));
+        page.setPath("/notice/detail/" + topic);
+
+        List<Message> notices = messageService.findNotices(hostHolder.getUser().getId(), topic, page.getOffset(), page.getLimit());
+        if (notices != null) {
+
+            List<Map<String, Object>> noticeVos = new ArrayList<>();
+
+            for (int i = notices.size() - 1; i >= 0; i--) {
+                Message notice = notices.get(i);
+                Map<String, Object> map = new HashMap<>();
+
+                map.put("notice", notice);
+                int fromId = notice.getFromId();
+                User fromUser = userService.findUserById(fromId);
+                map.put("fromUser", fromUser);
+
+                String content = notice.getContent();
+                content = HtmlUtils.htmlUnescape(content);
+                HashMap<String, Object> hashMap = JSONObject.parseObject(content, HashMap.class);
+
+                User user = userService.findUserById((Integer) hashMap.get("userId"));
+                map.put("user", user);
+                map.put("entityType", hashMap.get("entityType"));
+                map.put("entityId", hashMap.get("entityId"));
+                map.put("postId", hashMap.get("postId"));
+                map.put("topic", topic);
+
+                noticeVos.add(map);
+            }
+            model.addAttribute("noticeVos", noticeVos);
+
+            // 设置已读
+            List<Integer> ids = getUnreadLetterIds(notices);
+            if (ids.size() > 0) {
+                messageService.readMessage(ids);
+            }
+        }
+
+        return "/site/notice-detail";
     }
 }

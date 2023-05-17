@@ -96,7 +96,7 @@
 								</span>
 							</h6>
 							<div th:if="${commentVo!=null}">
-								<a href="notice-detail.html">
+								<a th:href="@{/notice/detail/comment}">
 									用户 <i th:utext="${commentVo.user.username}">nowcoder</i>
 									<span th:text="${commentVo.entityType==1?'评论':'回复'}">评论</span>了你的
 									<b th:text="${commentVo.entityType==1?'帖子':'评论'}">帖子</b> ...
@@ -123,7 +123,7 @@
 								</span>
 							</h6>
 							<div th:if="${likeVo!=null}">
-								<a href="notice-detail.html">用户
+								<a th:href="@{/notice/detail/like}">用户
 									<i th:utext="${likeVo.user.username}">nowcoder</i>点赞了你的
 									<b th:text="${likeVo.entityType==1?'帖子':'评论'}">帖子</b> ...
 								</a>
@@ -149,7 +149,7 @@
 								</span>
 							</h6>
 							<div th:if="${followVo!=null}">
-								<a href="notice-detail.html">用户
+								<a th:href="@{/notice/detail/follow}">用户
 									<i th:utext="${followVo.user.username}">nowcoder</i> 关注了你 ...</a>
 								<ul class="d-inline font-size-12 float-right">
 									<li class="d-inline ml-2"><span class="text-primary">共
